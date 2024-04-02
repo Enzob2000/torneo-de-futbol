@@ -1,5 +1,6 @@
 
-use std::{cmp::Ordering,  io};
+use core::num;
+use std::{cmp::{Ordering, Reverse},  io, process::exit, vec};
 #[derive( Clone)]
 struct  Equipos{
 
@@ -13,19 +14,17 @@ ge:u8,
 puntos:u8,
 grupo:String,
 
-
 }
 
 impl  Equipos {
 
 fn mostrar(&self){
 
-    println!("{}  {}  {}  {}  {}  {}  {}  {}",self.nombre,self.pj,self.pg,self.pe,self.pp,self.gf,self.ge,self.puntos)
-
+    println!("{}    {}    {}    {}    {}    {}    {}    {}",self.nombre,self.pj,self.pg,self.pe,self.pp,self.gf,self.ge,self.puntos)
 }
     
 }
-
+#[derive( Clone)]
 struct Partido{
 
 equipo1:String,
@@ -33,46 +32,63 @@ equipo2:String,
 gol1:u8,
 gol2:u8,
 
-
 }
-
-
 
 struct menu{
-
     
 }
-
 
 impl menu {
     
    fn cargar(&self,equipo:&mut Vec<Equipos>,grupo_a:&mut Vec<Partido>,grupo_b:&mut Vec<Partido>){
 
-     equipo.clear();
+    equipo.clear();
 
-     grupo_a.clear();
+    grupo_a.clear();
 
-     grupo_b.clear();
+    grupo_b.clear();
      
-     print!("{}[2J", 27 as char);
+    print!("{}[2J", 27 as char);
 
-      println!("El numero de equipos debe ser mayor a 6 y par");
+    println!("El numero de equipos debe ser mayor a 6 y par");
       
-      println!();
+    let mut grup=String::new();
 
-      let mut grup=String::new();
-
-      let mut cont=1;
+    let mut cont=1;
       
-      loop {
+    'cont:loop {
+
+       let mut veri=0;
 
        println!();
        
        println!("Ingrese el nombre del equipo");
 
+       println!();
+
        let mut nom=String::new();
 
        io::stdin().read_line(& mut nom).expect("fallo la lectura");
+
+       for i in 0..equipo.len(){
+    
+        if equipo[i].nombre==nom.trim(){
+
+        println!();
+
+        println!("El equipo {} ya esta inscrito ",nom.trim());
+       
+        veri=1;
+        break;
+
+       }
+       }
+
+       if veri==1{
+        continue;
+       }
+
+       
   
        if cont%2==0{
 
@@ -88,21 +104,37 @@ impl menu {
 
        equipo.push(Equipos{nombre:nom.trim().to_string(),pj:0,pg:0,pe:0,pp:0,gf:0,ge:0,puntos:0,grupo:grup});
 
-          if equipo.len()>=6 && equipo.len()%2==0{
+       if equipo.len()>=6 && equipo.len()%2==0{
 
+        loop {
+         
             println!(); 
 
             println!("Desea ingresar mas equipos si o no");
+
+            println!();
 
             let mut res=String::new();
             
             io::stdin().read_line(& mut res).expect("fallo la lectura");
 
-            if res.trim()!="si"{
+            if res.trim()=="si"{
 
-                break;
+                break  ;
 
+            }else if res.trim()=="no"{
+
+                break 'cont ;
+
+            }else{
+
+                println!();
+
+                println!("Opcion no valida");
             }
+            
+        }
+       
        }
 
       }
@@ -110,7 +142,6 @@ impl menu {
       let mut A:Vec<&String>=vec![];
 
       let mut B:Vec<&String>=vec![];
-
 
       for i in 0..equipo.len() {
           
@@ -137,8 +168,6 @@ impl menu {
       
       }
 
-      print!("{}[2J", 27 as char);
-
     self.opciones(equipo, grupo_a, grupo_b)  ;  
  
 }
@@ -147,58 +176,79 @@ impl menu {
 
     print!("{}[2J", 27 as char);
 
-     println!("Ingresa los resuldos del grupo A y B");
+    if equipo.len()==0{
+      
+        println!("No hay partidos cargados");
 
-     println!();
+        let mut pausa=String::new();
+  
+        io::stdin().read_line(&mut pausa).expect("fallo");
+  
+        self.opciones(equipo, grupo_a, grupo_b);
+    
+      }
+
+    println!("Ingresa los resuldos del grupo A y B");
+
+    println!();
      
-     println!("Grupo A");
+    println!("Grupo A");
 
-     for i in 0..grupo_a.len(){
-
-        let mut gols1=String::new();
-
-        let  mut gols2=String::new();
+    for i in 0..grupo_a.len(){
 
         println!();
 
         println!("{} vs {}",grupo_a[i].equipo1,grupo_a[i].equipo2);
         
-       loop{
+        loop{
+            
+          println!("Goles del equipo {}",grupo_a[i].equipo1);
 
-        println!("Goles del equipo {}",grupo_a[i].equipo1);
+          let mut gols1=String::new();
 
-        io::stdin().read_line(&mut gols1).expect("fallo la lectura");
+          io::stdin().read_line(&mut gols1).expect("fallo la lectura");
         
-        let mut gols1=gols1.trim().to_string();
+          let  gols1=gols1.trim().to_string();
 
-        if gols1.parse::<u8>().is_ok(){
+          if !gols1.parse::<u8>().is_ok(){
 
-        }else {
+            println!();
+            
+            println!("La variable tiene que ser numerica");
+
             continue;
-        }
 
-        let gols1:u8=gols1.parse().expect("fallo");
+          }
 
-        grupo_a[i].gol1=gols1;
 
-        break;
+          let gols1:u8=gols1.parse().expect("fallo");
+
+          grupo_a[i].gol1=gols1;
+
+          break;
 
         }
 
         loop{
 
             println!("Goles del equipo {}",grupo_a[i].equipo2);
+
+            let  mut gols2=String::new();
     
             io::stdin().read_line(&mut gols2).expect("fallo la lectura");
             
-            let mut gols2=gols2.trim().to_string();
+            let gols2=gols2.trim().to_string();
     
-            if gols2.parse::<u8>().is_ok(){
- 
+            if !gols2.parse::<u8>().is_ok(){
+
+                println!();
+                
+                println!("La variable tiene que ser numerica");
     
-            }else {
                 continue;
-            }
+
+    
+              }
     
             let gols2:u8=gols2.parse().expect("fallo");
 
@@ -255,7 +305,7 @@ impl menu {
                if equipo[j].nombre==grupo_a[i].equipo2{
    
                    equipo[j].pj+=1;
-                   equipo[j].pg=1;
+                   equipo[j].pg+=1;
                    equipo[j].gf+=&grupo_a[i].gol2;
                    equipo[j].ge+=&grupo_a[i].gol1;
                    equipo[j].puntos+=3;
@@ -285,7 +335,7 @@ impl menu {
                if equipo[j].nombre==grupo_a[i].equipo2{
    
                    equipo[j].pj+=1;
-                   equipo[j].pe=1;
+                   equipo[j].pe+=1;
                    equipo[j].gf+=&grupo_a[i].gol2;
                    equipo[j].ge+=&grupo_a[i].gol1;
                    equipo[j].puntos+=1;
@@ -297,26 +347,27 @@ impl menu {
    
                }
 
-        }
+        }  
+         println!();
             println!("Grupo B");
 
             for i in 0..grupo_b.len(){
        
-               let mut gols1=String::new();
        
-               let  mut gols2=String::new();
        
                println!();
        
                println!("{} vs {}",grupo_b[i].equipo1,grupo_b[i].equipo2);
                
               loop{
+
+               let mut gols1=String::new();
        
                println!("Goles del equipo {}",grupo_b[i].equipo1);
        
                io::stdin().read_line(&mut gols1).expect("fallo la lectura");
                
-               let mut gols1=gols1.trim().to_string();
+               gols1=gols1.trim().to_string();
        
                if gols1.parse::<u8>().is_ok(){
        
@@ -333,13 +384,15 @@ impl menu {
                }
        
                loop{
+
+                   let  mut gols2=String::new();
        
                    println!("Goles del equipo {}",grupo_b[i].equipo2);
            
                    io::stdin().read_line(&mut gols2).expect("fallo la lectura");
+
+                   gols2=gols2.trim().to_string();
                    
-                   let mut gols2=gols2.trim().to_string();
-           
                    if gols2.parse::<u8>().is_ok(){
         
            
@@ -402,7 +455,7 @@ impl menu {
                       if equipo[j].nombre==grupo_b[i].equipo2{
           
                           equipo[j].pj+=1;
-                          equipo[j].pg=1;
+                          equipo[j].pg+=1;
                           equipo[j].gf+=&grupo_b[i].gol2;
                           equipo[j].ge+=&grupo_b[i].gol1;
                           equipo[j].puntos+=3;
@@ -432,7 +485,7 @@ impl menu {
                       if equipo[j].nombre==grupo_a[i].equipo2{
           
                           equipo[j].pj+=1;
-                          equipo[j].pe=1;
+                          equipo[j].pe+=1;
                           equipo[j].gf+=&grupo_b[i].gol2;
                           equipo[j].ge+=&grupo_b[i].gol1;
                           equipo[j].puntos+=1;
@@ -487,19 +540,34 @@ impl menu {
 
     mayor=self._quicksort(  mayor);
     
-    mayor.extend(igual);
+    menor.extend(igual);
 
-    mayor.extend(menor);
+    menor.extend(mayor);
 
-    mayor
+    menor
 
+    
 }
 
 fn  buscar_equipo(&self,equipo:& mut Vec<Equipos>,grupo_a:& mut Vec<Partido>,grupo_b:& mut Vec<Partido>){
 
    print!("{}[2J", 27 as char);
+
+   if equipo.len()==0{
+      
+    println!("No hay partidos cargados");
+
+    let mut pausa=String::new();
+
+    io::stdin().read_line(&mut pausa).expect("fallo");
+
+    self.opciones(equipo, grupo_a, grupo_b);
+
+  }
    
    println!("Ingrese el nombre del equipo que desea buscar");
+
+   println!();
 
    let mut nombre=String::new();
 
@@ -511,16 +579,23 @@ fn  buscar_equipo(&self,equipo:& mut Vec<Equipos>,grupo_a:& mut Vec<Partido>,gru
 
          if equipo[i].nombre==nombre{
 
+            println!();
+
             println!("El equipo {} esta en grupo {} y en la pocision {}",nombre,equipo[i].grupo,i+1);
+
+            println!();
+
+            let mut pausa=String::new();
+
+            io::stdin().read_line(&mut pausa).expect("fallo");
 
             self.opciones(equipo, grupo_a, grupo_b);            
 
          }
        
-       
     }
 
-    println!("No sea encontrado al equipo");
+    println!("No sea encontrado el equipo");
 
     let mut pausa=String::new();
 
@@ -534,6 +609,17 @@ fn mostrar_encuentros(&self,equipo:& mut Vec<Equipos>,grupo_a:& mut Vec<Partido>
 
     print!("{}[2J", 27 as char);
 
+    if equipo.len()==0{
+      
+        println!("No hay partidos cargados");
+
+        let mut pausa=String::new();
+  
+        io::stdin().read_line(&mut pausa).expect("fallo");
+  
+        self.opciones(equipo, grupo_a, grupo_b);
+      }
+
     println!("Grupo A");
 
     for i in 0..grupo_a.len(){
@@ -543,7 +629,8 @@ fn mostrar_encuentros(&self,equipo:& mut Vec<Equipos>,grupo_a:& mut Vec<Partido>
     println!("{} vs {}",grupo_a[i].equipo1,grupo_a[i].equipo2);
 
     }
-
+    
+    println!();
     println!("Grupo B");
 
     for i in 0..grupo_b.len(){
@@ -566,8 +653,24 @@ fn mostrar_encuentros(&self,equipo:& mut Vec<Equipos>,grupo_a:& mut Vec<Partido>
 fn mostrar_resultados(&self,equipo:& mut Vec<Equipos>,grupo_a:& mut Vec<Partido>,grupo_b:& mut Vec<Partido>){
 
   print!("{}[2J", 27 as char);
+
+  if equipo.len()==0{
+      
+    println!("No hay partidos cargados");
+
+    println!();
+
+    let mut pausa=String::new();
+
+    io::stdin().read_line(&mut pausa).expect("fallo");
+
+    self.opciones(equipo, grupo_a, grupo_b);
+
+  }
   
-  println!("Resultados que desea octener indique el grupo");
+  println!("Resultados que desea octener indique el grupo A/B");
+
+  println!();
 
   let mut grupo=String::new();
 
@@ -613,49 +716,54 @@ fn mostrar_resultados(&self,equipo:& mut Vec<Equipos>,grupo_a:& mut Vec<Partido>
 
 fn opciones(&self,equipo:&mut Vec<Equipos>,grupo_a:&mut Vec<Partido>,grupo_b:&mut Vec<Partido>){
 
+loop {
+    
+
+
 print!("{}[2J", 27 as char);
 
 println!("1.Cargar equipos");
 println!();
-println!("2.cargar resultados de los partidos");
+println!("2.Cargar resultados de los partidos");
 println!();
-println!("3.mostrar resultados");
+println!("3.Mostrar resultados");
 println!();
-println!("4.tablas del torneo");
+println!("4.Tablas del torneo");
 println!();
-println!("5.buscar equipo");
+println!("5.Buscar equipo");
 println!();
-println!("6.tablas del torneo");
+println!("6.Mostrar todos los encuentros");
+println!();
+println!("7.Mostrar encuentros y resultados");
+println!();
+println!("8.salida");
+println!();
 
 let mut opcion=String::new();
 
 io::stdin().read_line(&mut opcion).expect("fallo");
 
-opcion=opcion.trim().to_string();
+let opcion:u8=match opcion.trim().parse() {
 
-if opcion=="1" {
-
-    self.cargar(equipo, grupo_a, grupo_b);
+    Ok(num)=>num,
+    Err(_)=>continue
     
+};
+
+match opcion {
+
+    1=>self.cargar(equipo, grupo_a, grupo_b),
+    2=>self.ingresar_resultados(equipo, grupo_a, grupo_b),
+    3=>self.mostrar_resultados(equipo,grupo_a, grupo_b),
+    4=>self.tabla(equipo,grupo_a, grupo_b),
+    5=>self.buscar_equipo(equipo, grupo_a, grupo_b),
+    6=>self.mostrar_encuentros(equipo, grupo_a, grupo_b),
+    7=>self.mostrar_encuentros_y_resultados(equipo, grupo_a, grupo_b),
+    8=>exit(0),
+    _=>()
 }
 
-    
-if opcion=="2" {
 
-    self.ingresar_resultados(equipo, grupo_a, grupo_b);
-    
-}
-
-if opcion=="3" {
-
-    self.mostrar_resultados(equipo,grupo_a, grupo_b);
-    
-}
-
-if opcion=="4" {
-
-    self.tabla(equipo,grupo_a, grupo_b);
-    
 }
 
 }
@@ -664,26 +772,89 @@ fn tabla(&self,equipo:&mut Vec<Equipos>,grupo_a:&mut Vec<Partido>,grupo_b:&mut V
 
     print!("{}[2J", 27 as char);
 
+    if equipo.len()==0{
+      
+      println!("No hay partidos cargados");
+
+      println!();
+
+      let mut pausa=String::new();
+
+      io::stdin().read_line(&mut pausa).expect("fallo");
+
+      self.opciones(equipo, grupo_a, grupo_b);
+
+    }
+
     println!("Tablas de posiciones del torneo");
 
     println!();
 
     println!("nombre  PJ  PG  PE  PP  GF  GE  Puntos");
 
-    for i in 0..equipo.len(){
+    for i in equipo.iter().rev(){
     
         println!();
-        equipo[i].mostrar();
+        i.mostrar();
 
     }
 
-  let mut pausa=String::new();
+   println!();
+   
+   let mut pausa=String::new();
 
-  io::stdin().read_line(&mut pausa).expect("fallo");
+   io::stdin().read_line(&mut pausa).expect("fallo");
   
   self.opciones(equipo, grupo_a, grupo_b);
 
 }
+
+fn mostrar_encuentros_y_resultados(&self,equipo:& mut Vec<Equipos>,grupo_a:& mut Vec<Partido>,grupo_b:& mut Vec<Partido>){
+
+    print!("{}[2J", 27 as char);
+
+    if equipo.len()==0{
+      
+        println!("No hay partidos cargados");
+
+        let mut pausa=String::new();
+  
+        io::stdin().read_line(&mut pausa).expect("fallo");
+  
+        self.opciones(equipo, grupo_a, grupo_b);
+      }
+
+    println!("Grupo A");
+
+    for i in 0..grupo_a.len(){
+    
+    println!();
+
+    println!("{} vs {}",grupo_a[i].equipo1,grupo_a[i].equipo2);
+    println!();
+    println!("{} : {}",grupo_a[i].gol1,grupo_a[i].gol2)
+
+    }
+    
+    println!();
+    println!("Grupo B");
+
+    for i in 0..grupo_b.len(){
+    
+        println!();
+    
+        println!("{} vs {}",grupo_b[i].equipo1,grupo_b[i].equipo2);
+        println!();
+        println!("{} : {}",grupo_b[i].gol1,grupo_b[i].gol2)
+    
+        }
+    
+    let mut pausa=String::new();
+
+    io::stdin().read_line(&mut pausa).expect("fallo");
+
+    self.opciones(equipo, grupo_a, grupo_b);
+ }
 
 }
 
@@ -699,6 +870,5 @@ fn main() {
 
    incio.opciones(&mut equipo, &mut grupo_a, &mut grupo_b);
 
-
-    
+  
 }
