@@ -1,6 +1,6 @@
 
-use core::num;
-use std::{cmp::{Ordering, Reverse},  io, process::exit, vec};
+use std::{cmp::Ordering,  io, process::exit, vec};
+
 #[derive( Clone)]
 struct  Equipos{
 
@@ -35,11 +35,11 @@ struct Partido{
 
 }
 
-struct menu{
+struct Menu{
     
 }
 
-impl menu {
+impl Menu {
     
    fn cargar(&self,equipo:&mut Vec<Equipos>,grupo_a:&mut Vec<Partido>,grupo_b:&mut Vec<Partido>){
 
@@ -47,13 +47,13 @@ impl menu {
 
      grupo_a.clear();
 
-      grupo_b.clear();
+     grupo_b.clear();
      
      print!("{}[2J", 27 as char);
 
      println!("El numero de equipos debe ser mayor a 6 y par");
       
-     let mut grup=String::new();
+     let mut _grup=String::new();
 
      let mut cont=1;
       
@@ -94,17 +94,17 @@ impl menu {
 
          if cont%2==0{
 
-             grup="A".to_string();
+             _grup="A".to_string();
             
             }else{
 
-             grup="B".to_string();          
+             _grup="B".to_string();          
 
             }   
 
          cont+=1; 
 
-         equipo.push(Equipos{nombre:nom.trim().to_string(),pj:0,pg:0,pe:0,pp:0,gf:0,ge:0,puntos:0,grupo:grup});
+         equipo.push(Equipos{nombre:nom.trim().to_string(),pj:0,pg:0,pe:0,pp:0,gf:0,ge:0,puntos:0,grupo:_grup});
 
          if equipo.len()>=6 && equipo.len()%2==0{
 
@@ -138,19 +138,19 @@ impl menu {
             }
         }
       
-     let mut A:Vec<&String>=vec![];
+     let mut a:Vec<&String>=vec![];
 
-     let mut B:Vec<&String>=vec![];
+     let mut b:Vec<&String>=vec![];
 
      for i in 0..equipo.len() {
           
          if &equipo[i].grupo=="A" {
 
-             A.push(&equipo[i].nombre)
+             a.push(&equipo[i].nombre)
           
          }else{
 
-             B.push(&equipo[i].nombre)
+             b.push(&equipo[i].nombre)
 
             } 
         }
@@ -159,9 +159,9 @@ impl menu {
 
          for j in i+1..equipo.len()/2{
 
-             grupo_a.push(Partido{equipo1:A[i].to_string(),equipo2:A[j].to_string(),gol1:0,gol2:0});
+             grupo_a.push(Partido{equipo1:a[i].to_string(),equipo2:a[j].to_string(),gol1:0,gol2:0});
 
-             grupo_b.push(Partido{equipo1:B[i].to_string(),equipo2:B[j].to_string(),gol1:0,gol2:0});
+             grupo_b.push(Partido{equipo1:b[i].to_string(),equipo2:b[j].to_string(),gol1:0,gol2:0});
               
             }
       
@@ -512,6 +512,8 @@ impl menu {
 
      menor.extend(mayor);
 
+     menor.reverse();
+
      menor
 
     }
@@ -548,7 +550,7 @@ impl menu {
 
              println!();
 
-             println!("El equipo {} esta en grupo {} y en la pocision {}",nombre,equipo[i].grupo,i+1);
+             println!("El equipo {} esta en grupo {} y esta en la pocision {}",nombre,equipo[i].grupo,i+1);
 
              println!();
 
@@ -751,7 +753,7 @@ impl menu {
 
      println!("nombre  PJ  PG  PE  PP  GF  GE  Puntos");
 
-     for i in equipo.iter().rev(){
+     for i in equipo.iter(){
     
          println!();
 
@@ -833,7 +835,7 @@ fn main() {
 
    let mut grupo_b:Vec<Partido>=vec![];
 
-   let incio=menu{};
+   let incio=Menu{};
 
    incio.opciones(&mut equipo, &mut grupo_a, &mut grupo_b);
 
