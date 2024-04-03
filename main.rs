@@ -485,7 +485,7 @@ impl Menu {
       
         }
     
-     let pivote=lista[0].puntos; 
+     let pivote=lista[lista.len()/2].puntos; 
 
      let mut menor:Vec<Equipos>=vec![];
     
@@ -511,8 +511,6 @@ impl Menu {
      menor.extend(igual);
 
      menor.extend(mayor);
-
-     menor.reverse();
 
      menor
 
@@ -544,13 +542,13 @@ impl Menu {
 
      nombre=nombre.trim().to_string();
 
-     for i in 0..equipo.len(){
+     for (j,i) in (0..equipo.len()).rev().enumerate(){
 
          if equipo[i].nombre==nombre{
 
              println!();
 
-             println!("El equipo {} esta en grupo {} y esta en la pocision {}",nombre,equipo[i].grupo,i+1);
+             println!("El equipo {} esta en gr1upo {} y esta en la pocision {}",nombre,equipo[i].grupo,j+1);
 
              println!();
 
@@ -753,7 +751,7 @@ impl Menu {
 
      println!("nombre  PJ  PG  PE  PP  GF  GE  Puntos");
 
-     for i in equipo.iter(){
+     for i in equipo.iter().rev(){
     
          println!();
 
